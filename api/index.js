@@ -97,7 +97,7 @@ app.post("/reviews", requireAuth, async (req, res) => {
 
 
 
-//
+
 app.get('/user-reviews',requireAuth,  async (req, res) => {
   const auth0Id = req.auth.payload.sub;
 
@@ -224,10 +224,12 @@ app.get("/my-movies", requireAuth, async (req, res) => {
 
 //
 app.post("/verify-user", requireAuth, async (req, res) => {
+  console.log("req.auth.payload",req.auth.payload);
   const auth0Id = req.auth.payload.sub;
-  const email = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/email`];
-  const username = req.auth.payload[`${process.env.AUTH0_AUDIENCE}/name`];
+  const email = req.auth.payload['https://api.todos/email'];
+  const username = req.auth.payload['https://api.todos/name'];
 
+  console.log("user",username);
   const user = await prisma.user.findUnique({
     where: {
       auth0Id,

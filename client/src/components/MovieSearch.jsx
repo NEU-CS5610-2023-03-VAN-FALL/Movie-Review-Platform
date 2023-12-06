@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import "../style/moviesearch.css";
 
 const MovieSearch = ({ movie }) => {
   const [error, setError] = useState(null);
@@ -34,18 +34,22 @@ const MovieSearch = ({ movie }) => {
     };
 
     fetchMovieData();
+
   }, [movie]); // 
 
   return (
-    <div>
+    <div className="movie-search-results-container">
       <h2>Movie Search Results</h2>
       {error && <p>{error}</p>}
       {searchResults && searchResults.Search && searchResults.Search.length > 0 && (
-        <div>
+        <div className="movie-result">
           <p>Title: {searchResults.Search[0].Title}</p>
           <p>Year: {searchResults.Search[0].Year}</p>
-          <p>Type: {searchResults.Search[0].Type}</p>
-          <img src={searchResults.Search[0].Poster} alt={`Poster for ${searchResults.Search[0].Title}`} />
+          <p>imdbID: {searchResults.Search[0].imdbID}</p>
+          <img
+            src={searchResults.Search[0].Poster}
+            alt={`Poster for ${searchResults.Search[0].Title}`}
+          />
         </div>
       )}
     </div>

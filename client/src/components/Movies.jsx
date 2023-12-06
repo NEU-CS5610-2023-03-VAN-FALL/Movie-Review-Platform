@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "../style/movies.css";
 
 const Movies = () => {
   const navigate = useNavigate();
@@ -14,6 +15,18 @@ const Movies = () => {
             "Content-Type": "application/json",
           },
         });
+
+        if (!response) {
+          console.error("Error fetching movies - No response received");
+          return;
+        }
+    
+        if (!response.ok) {
+          // Log the HTTP error status
+          console.error("Error fetching movies - HTTP status:", response.status);
+          return;
+        }
+    
         const moviesData = await response.json();
         setMovies(moviesData);
       } catch (error) {
@@ -25,16 +38,21 @@ const Movies = () => {
   }, []);
 
   const handleMovieClick = (movieId) => {
-    navigate(`/movie-reviews/${movieId}`);
+    navigate(`/app/movie-reviews/${movieId}`);
   };
 
   return (
-    <div>
+    <div className="movie-list-container">
       <h2>All Movies</h2>
-      <ul>
+      <ul className="movie-list">
         {movies.map((movie) => (
-          <li key={movie.id} onClick={() => handleMovieClick(movie.id)}>
-            {movie.title}
+          <li key={movie.id} className="movie-item">
+            <div className="movie-name">
+              {movie.title}
+            </div>
+            <button onClick={() => handleMovieClick(movie.id)}>
+              View Details
+            </button>
           </li>
         ))}
       </ul>

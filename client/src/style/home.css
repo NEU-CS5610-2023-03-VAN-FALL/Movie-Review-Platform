@@ -1,18 +1,54 @@
+/* home.css */
+
 .home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.auth-buttons {
+  margin-bottom: 20px;
 }
 
 .btn-primary {
-  background-color: coral;
-  color: whitesmoke;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .btn-secondary {
-  margin-top: 5px;
-  background-color: cornflowerblue;
-  color: whitesmoke;
+  background-color: #6c757d;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
+
+.explore-movies-button button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.latest-review {
+  border: 2px solid #3498db; /* Add a border to create a distinct box */
+  padding: 20px; /* Add some padding for spacing inside the box */
+  border-radius: 8px; /* Add rounded corners for a nicer look */
+  margin-top: 20px; /* Add margin to separate it from other elements */
+}
+
+.latest-review h2 {
+  color: #3498db; /* Adjust the color of the heading */
+}
+
+

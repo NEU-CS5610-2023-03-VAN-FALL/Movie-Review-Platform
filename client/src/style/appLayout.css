@@ -1,78 +1,167 @@
-.app {
-  margin: 5px;
+/* colors - see style guide for docs. 
+Clearly there is more you could place in variables, up to you if you want to use them. My answer does not go beyond colors to keep the code easier to read. */
+
+:root {
+  --color1: #001219;
+  --color2: #005f73;
+  --color3: #3d9397;
+  --color4: #94d28d;
+  --color5: #e9d8a6;
+  --color6: #ee9800;
+  --color7: #ca6702;
+  --color8: #bb3e03;
+  --color9: #ae2012;
+  --color10: #9b2226;
 }
 
-.title {
-  font-size: 12px;
-  border: 1px solid rgb(0, 255, 179);
+/* generic site styles */
+li img {
+
+  width: 100px;
+  height: 100px;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+
+  background-color: lightgray 
+
+}
+
+.navbar-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-title h1 {
+  color: black;
+  margin: 0;
+}
+
+/* stretches completely across the page with the color */
+
+.header {
+  background-color: var(--color5);
+}
+
+/* width limited and centered to line up with the rest of the page */
+
+header {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* header and nav styles */
+/* navigation styling - universal across breakpoints */
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 4 button layout at the top of the screen. */
+
+nav ul {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: space-between;
+}
+
+nav li {
+  flex-basis: 48%;
+  margin-bottom: 0.5rem;
+}
+
+nav li:first-child {
+  flex-basis: 100%;
   text-align: center;
 }
 
-.header {
-  width: 100%;
-  border: 1px solid orange;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin: 5px 0;
+nav li:first-child a {
+  background-color: transparent;
 }
 
-.content {
-  width: 100%;
-  border: 1px solid lightskyblue;
-  margin-top: 5px;
+nav a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: white;
+  display: block;
+  padding: 0.5rem;
+  text-align: center;
+  background-color: var(--color10);
+  border-radius: 5px;
 }
 
-.menu-list {
-  list-style: none;
-  display: flex;
-  justify-content: space-evenly;
-  padding: 0;
-}
+nav a:hover {
+  background-color: var(--color1);
+  color: var(--color5);
+} 
 
-.menu-list li {
-  margin-right: 8px;
-}
-
-.exit-button {
-  background-color: lightcoral;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  background-color: lightcoral;
-  color: aliceblue;
-  height: 100%;
-  font-size: 36px;
-}
-@media only screen and (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: center;
+/* Tablet */
+@media (min-width: 550px) {
+  header {
+    padding: 3rem;
   }
-
-  .menu-list {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .menu-list li {
-    margin: 8px 0;
-  }
-}
-
-@media only screen and (max-width: 480px) {
-  .menu-list {
-    flex-direction: row;
-    flex-wrap: wrap;
+  nav ul {
     justify-content: center;
+    gap: 1.2em;
   }
+  /* flex-basis: auto will override the 48% from the mobile styles */
+  nav li {
+    flex-basis: auto;
+    margin-bottom: 0;
+  }
+  /* resetting the styles from button to link */
+  nav a {
+    color: var(--color1);
+    background-color: transparent;
+    padding: 0;
+  }
+  nav a:hover {
+    color: var(--color2);
+    background-color: transparent;
+  }
+}
 
-  .menu-list li {
-    margin: 8px;
-    flex-basis: 48%; 
+/* Desktop */
+@media (min-width: 800px) {
+  nav ul {
+    justify-content: flex-end;
+  }
+  
+  /* flex-basis: auto; will override the 100% from the mobile styles */
+  /* 'order' will change the order of the elements in the DOM. this only works with flex */
+  nav li:first-child {
+    flex-basis: auto;
+    margin: 0 auto;
+    order: 2;
+  }
+  nav li:nth-child(2),
+  nav li:nth-child(3) {
+    order: 1;
+  }
+  nav li:nth-child(4),
+  nav li:nth-child(5) {
+    order: 3;
   }
 }

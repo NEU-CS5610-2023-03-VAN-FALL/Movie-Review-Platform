@@ -2,6 +2,7 @@ import React from "react";
 import * as ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
+import App from "./components/App";
 import Movies from "./components/Movies";
 import MovieDetails from "./components/MovieDetails";
 import Profile from "./components/Profile";
@@ -11,7 +12,6 @@ import VerifyUser from "./components/VerifyUser";
 import AuthDebugger from "./components/AuthDebugger";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { AuthTokenProvider } from "./AuthTokenContext";
-import "./style/normalize.css";
 import "./style/index.css";
 
 const container = document.getElementById("root");
@@ -39,7 +39,8 @@ root.render(
       authorizationParams={{
         redirect_uri: `${window.location.origin}/verify-user`,
         audience: process.env.REACT_APP_AUTH0_AUDIENCE,
-        scope: requestedScopes.join(" "),
+        // scope: requestedScopes.join(" "),
+        scope:'openid profile email',
       }}
     >
       <AuthTokenProvider>
@@ -56,7 +57,8 @@ root.render(
                 <AppLayout />
               </RequireAuth>
             }
-        >
+            >
+              <Route index element={<App />} />
               <Route path="profile"element={<Profile />} />
                 <Route path="movies" element={<Movies />} />
                 <Route path="movie-reviews/:movieId" element={<MovieDetails />} />

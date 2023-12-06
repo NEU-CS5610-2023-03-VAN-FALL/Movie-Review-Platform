@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback  } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuthToken } from "../AuthTokenContext";
+import "../style/profile.css";
 
 export default function Profile() {
   const { user } = useAuth0();
@@ -10,8 +11,10 @@ export default function Profile() {
   const { accessToken } = useAuthToken();
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [editedReviewContent, setEditedReviewContent] = useState("");
+  const [createReviewError, setCreateReviewError] = useState("");
+  const [editReviewError, setEditReviewError] = useState("");
 
-  const fetchUserMovies = async () => {
+  const fetchUserMovies = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/my-movies`, {
         method: "GET",
@@ -25,12 +28,12 @@ export default function Profile() {
     } catch (error) {
       console.error("Error fetching user's movies:", error);
     }
-  };
+  }, [accessToken]);
 
   useEffect(() => {
-  
-    fetchUserMovies(user.sub);
-  }, [user]);
+    
+    fetchUserMovies();
+  }, [user,fetchUserMovies]);
 
   const handleEditReview = (reviewId, currentContent) => {
     setEditingReviewId(reviewId);
@@ -40,9 +43,15 @@ export default function Profile() {
   const handleCancelEdit = () => {
     setEditingReviewId(null);
     setEditedReviewContent("");
+    setEditReviewError("");
   };
 
   const handleSaveEdit = async () => {
+    if (!editedReviewContent.trim()) {
+      setEditReviewError("Review content cannot be empty");
+      return;
+    }
+
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/review/${editingReviewId}`, {
         method: "PUT",
@@ -59,6 +68,7 @@ export default function Profile() {
         fetchUserMovies();
         setEditingReviewId(null);
         setEditedReviewContent("");
+        setEditReviewError("");
       } else {
         console.error("Failed to save edited review");
       }
@@ -87,6 +97,11 @@ export default function Profile() {
   };
 
   const handleCreateReview = async () => {
+    if (!movieName.trim() || !movieReview.trim()) {
+      setCreateReviewError("Movie name and review content cannot be empty");
+      return;
+    }
+
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/reviews`, {
         method: "POST",
@@ -101,12 +116,11 @@ export default function Profile() {
       });
 
       if (response.ok) {
-        const newReview = await response.json();
-        const reviewId = newReview.id;
-
+    
         fetchUserMovies();
         setMovieName("");
         setMovieReview("");
+        setCreateReviewError("");
       } else {
         console.error("Failed to create review");
       }
@@ -116,9 +130,10 @@ export default function Profile() {
   };
 
   return (
-    <div>
-      <div>
+    <div className="review-container">
+      <div className="review-form">
         <h2>Create a New Review</h2>
+        {createReviewError && <p className="error-message">{createReviewError}</p>}
         <label>
           Movie Name:
           <input
@@ -137,20 +152,20 @@ export default function Profile() {
         <button onClick={handleCreateReview}>Create Review</button>
       </div>
 
-      <div>
+      <div className="user-info">
         <p>Name: {user.nickname}</p>
         <p>Email: {user.email}</p>
         <p>Auth0Id: {user.sub}</p>
         <p>Email Verified: {user.email_verified?.toString()}</p>
       </div>
 
-      <div>
+      <div className="movie-reviews">
         <h2>Your Movie Reviews</h2>
 
         {userMovies.length > 0 ? (
           <ul>
             {userMovies.map((movie) => (
-              <div key={movie.id}>
+              <div className="review-item" key={movie.id}>
                 <h3>{movie.title}</h3>
                 {movie.reviews.map((review) => (
                   <div key={review.id}>
@@ -160,6 +175,7 @@ export default function Profile() {
                           value={editedReviewContent}
                           onChange={(e) => setEditedReviewContent(e.target.value)}
                         />
+                        {editReviewError && <p className="error-message">{editReviewError}</p>}
                         <button onClick={handleSaveEdit}>Save</button>
                         <button onClick={handleCancelEdit}>Cancel</button>
                       </div>
