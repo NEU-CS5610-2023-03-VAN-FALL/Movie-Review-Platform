@@ -2,6 +2,7 @@ import React, { useState, useEffect,useCallback  } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuthToken } from "../AuthTokenContext";
 import "../style/profile.css";
+// ... (imports remain the same)
 
 export default function Profile() {
   const { user } = useAuth0();
@@ -31,9 +32,8 @@ export default function Profile() {
   }, [accessToken]);
 
   useEffect(() => {
-    
     fetchUserMovies();
-  }, [user,fetchUserMovies]);
+  }, [user, fetchUserMovies]);
 
   const handleEditReview = (reviewId, currentContent) => {
     setEditingReviewId(reviewId);
@@ -116,7 +116,6 @@ export default function Profile() {
       });
 
       if (response.ok) {
-    
         fetchUserMovies();
         setMovieName("");
         setMovieReview("");
@@ -140,6 +139,7 @@ export default function Profile() {
             type="text"
             value={movieName}
             onChange={(e) => setMovieName(e.target.value)}
+            maxLength={255} // Set an appropriate max length
           />
         </label>
         <label>
@@ -147,6 +147,7 @@ export default function Profile() {
           <textarea
             value={movieReview}
             onChange={(e) => setMovieReview(e.target.value)}
+            maxLength={1000} // Set an appropriate max length
           />
         </label>
         <button onClick={handleCreateReview}>Create Review</button>
@@ -174,6 +175,7 @@ export default function Profile() {
                         <textarea
                           value={editedReviewContent}
                           onChange={(e) => setEditedReviewContent(e.target.value)}
+                          maxLength={1000} // Set an appropriate max length
                         />
                         {editReviewError && <p className="error-message">{editReviewError}</p>}
                         <button onClick={handleSaveEdit}>Save</button>
@@ -200,3 +202,4 @@ export default function Profile() {
     </div>
   );
 }
+

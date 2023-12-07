@@ -28,7 +28,7 @@ const prisma = new PrismaClient();
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
-//
+
 app.get("/reviews", async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -44,57 +44,55 @@ app.get("/reviews", async (req, res) => {
   }
 });
 
-//
 app.post("/reviews", requireAuth, async (req, res) => {
   const auth0Id = req.auth.payload.sub;
 
   const { content, movieTitle } = req.body;
 
-  if (!content || !movieTitle) {
-    res.status(400).send("Content and movieTitle are required");
-  } else {
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          auth0Id,
-        },
-      });
+  // Data validation
+  if (!content || typeof content !== 'string' || !movieTitle || typeof movieTitle !== 'string') {
+    return res.status(400).json({ error: "Invalid content or movieTitle format" });
+  }
 
-      if (!user) {
-        res.status(404).send("User not found");
-        return;
-      }
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        auth0Id,
+      },
+    });
 
-      let movie = await prisma.movie.findUnique({
-        where: {
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    let movie = await prisma.movie.findUnique({
+      where: {
+        title: movieTitle,
+      },
+    });
+
+    if (!movie) {
+      movie = await prisma.movie.create({
+        data: {
           title: movieTitle,
         },
       });
-
-      if (!movie) {
-        movie = await prisma.movie.create({
-          data: {
-            title: movieTitle,
-          },
-        });
-      }
-
-      const newReview = await prisma.review.create({
-        data: {
-          content,
-          user: { connect: { id: user.id } },
-          movie: { connect: { id: movie.id } },
-        },
-      });
-
-      res.status(201).json(newReview);
-    } catch (error) {
-      console.error("Error creating review:", error);
-      res.status(500).json({ error: "Internal server error" });
     }
+
+    const newReview = await prisma.review.create({
+      data: {
+        content,
+        user: { connect: { id: user.id } },
+        movie: { connect: { id: movie.id } },
+      },
+    });
+
+    return res.status(201).json(newReview);
+  } catch (error) {
+    console.error("Error creating review:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 
 
@@ -125,7 +123,7 @@ app.get('/user-reviews',requireAuth,  async (req, res) => {
   }
 });
 
-//
+
 app.get("/review/:id", requireAuth, async (req, res) => {
   const id = req.params.id;
   const review = await prisma.review.findUnique({
@@ -136,15 +134,20 @@ app.get("/review/:id", requireAuth, async (req, res) => {
   res.json(review);
 });
 
-//
+
 app.put("/review/:id", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id);
   const { content } = req.body;
 
+  // Data validation
+  if (!content || typeof content !== 'string') {
+    return res.status(400).json({ error: "Invalid content format" });
+  }
+
   try {
     const existingReview = await prisma.review.findUnique({
       where: {
-        id
+        id,
       },
     });
 
@@ -169,6 +172,7 @@ app.put("/review/:id", requireAuth, async (req, res) => {
   }
 });
 
+
 // deletes a todo item by id
 app.delete("/review/:id", requireAuth, async (req, res) => {
   const id = parseInt(req.params.id);
@@ -180,7 +184,7 @@ app.delete("/review/:id", requireAuth, async (req, res) => {
   res.json(deletedItem);
 });
 
-//
+
 // Fetch movies and reviews for the authenticated user
 app.get("/my-movies", requireAuth, async (req, res) => {
   const auth0Id = req.auth.payload.sub;
@@ -222,14 +226,16 @@ app.get("/my-movies", requireAuth, async (req, res) => {
 });
 
 
-//
+
 app.post("/verify-user", requireAuth, async (req, res) => {
   console.log("req.auth.payload",req.auth.payload);
   const auth0Id = req.auth.payload.sub;
   const email = req.auth.payload['https://api.todos/email'];
   const username = req.auth.payload['https://api.todos/name'];
 
-  console.log("user",username);
+  if (typeof username !== 'string') {
+    return res.status(400).json({ error: 'Invalid username format' });
+  }
   const user = await prisma.user.findUnique({
     where: {
       auth0Id,
@@ -251,7 +257,7 @@ app.post("/verify-user", requireAuth, async (req, res) => {
   }
 });
 
-//
+// Fetch movies unauthenticated user
 app.get('/movies', async (req, res) => {
   try {
     const movies = await prisma.movie.findMany();
@@ -262,7 +268,7 @@ app.get('/movies', async (req, res) => {
   }
 });
 
-//
+
 app.get('/movie-reviews/:movieId', async (req, res) => {
   const { movieId } = req.params;
 
@@ -279,6 +285,7 @@ app.get('/movie-reviews/:movieId', async (req, res) => {
   }
 });
 
-app.listen(8000, () => {
-  console.log("Server running on http://localhost:8000 🎉 🚀");
-});
+const PORT = parseInt(process.env.PORT) || 8080;
+app.listen(PORT, () => {
+ console.log(`Server running on http://localhost:${PORT} 🎉 🚀`);
+})
